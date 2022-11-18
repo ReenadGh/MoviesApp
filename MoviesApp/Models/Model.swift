@@ -8,13 +8,24 @@
 import Foundation
 
 
+
+
+struct MovieResponse : Codable  {
+    
+    let  movies : [Movie]
+    
+    private enum CodingKeys: String, CodingKey {
+        case movies = "Search"
+    }
+}
+
 struct Movie: Codable  , Hashable{
     let title: String
     let year: String
     let imdbId: String
     let poster: String
     
-     enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case title = "Title"
         case year = "Year"
         case imdbId = "imdbID"
@@ -23,12 +34,6 @@ struct Movie: Codable  , Hashable{
     
     
   
-    
-    
-    func getId (type : MatchedType) -> String {
-        
-        return "\(type)-\(title)-\(year)"
-    }
     
 }
 
@@ -40,3 +45,5 @@ enum MatchedType : String {
     case stars = "Stars"
     case poster = "Poster"
 }
+
+

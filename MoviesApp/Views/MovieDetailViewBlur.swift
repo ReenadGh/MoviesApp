@@ -1,43 +1,39 @@
 //
-//  MovieDetailView.swift
+//  MovieDetailViewBlur.swift
 //  MoviesApp
 //
-//  Created by Reenad gh on 15/04/1444 AH.
+//  Created by Reenad gh on 16/04/1444 AH.
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
-struct MovieDetailView: View {
+struct MovieDetailViewBlur: View {
     var namespace : Namespace.ID
-    @Binding var movie : Movie
+    @Binding var movie : MovieViewModel
     @Binding var showMovieView : Bool
     var body: some View {
         
-        ZStack {
-            VStack (alignment: .leading, spacing: 0){
-               
-           
-                        Image(movie.poster)
-                            .resizable()
-                             .scaledToFill()
-                             .frame(maxHeight : 600)
-                             .matchedGeometryEffect(id: movie.getId(type: .poster), in: namespace)
-                Spacer()
-     
-                
-        }
-            
-          
+      
 
 
-                        VStack ( spacing: 12){
-                            RoundedRectangle(cornerRadius: 1)
-                                .frame( height: 300)
-                                .foregroundColor(Color.clear)
+                     
+                            
+                        
                             
                             
                             VStack (alignment:.leading) {
                                 ScrollView{
+                                    WebImage(url: URL(string: movie.poster))
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(  height: 300)
+                                        .frame(  maxWidth: 200)
+
+                                        .cornerRadius(20)
+                                        .shadow(color: Color.darkBackground, radius: 20, x: 5, y: 5)
+                                        .matchedGeometryEffect(id: movie.getId(type: .poster), in: namespace)
+
                                     Text(movie.title)
                                     .font(.largeTitle.bold())
                                 .matchedGeometryEffect(id: movie.getId(type: .title), in: namespace)
@@ -63,7 +59,7 @@ struct MovieDetailView: View {
                                         
                                     }
                                     .matchedGeometryEffect(id: movie.getId(type: .stars), in: namespace)
-                                    Spacer()
+
                                 }
                             .foregroundColor(.white)
                             .padding()
@@ -74,21 +70,8 @@ struct MovieDetailView: View {
                       
                             }
                             
-                        }
-                        .background(
-                                                    
-                            
-                            LinearGradient(gradient: Gradient(stops: [
-                                .init(color: Color.darkBackground , location: 0.5)
-                                     ,
-                                .init(color: Color.clear , location: 0.8
-                                     )
-                            
-                            ]), startPoint: .bottom, endPoint: .top)
-                      
-
-                            
-                    )
+                        
+            
                            .frame(maxWidth : .infinity)
                     
 
@@ -98,7 +81,7 @@ struct MovieDetailView: View {
                 
             
 
-        }
+        
         .overlay(
             Button {
                 withAnimation (.spring(response: 0.7, dampingFraction: 1)){
@@ -120,20 +103,29 @@ struct MovieDetailView: View {
                 .padding()
             ,alignment: .topTrailing
     )
-        .background(Color.darkBackground)
+        .background(
+            
+            ZStack {
+                WebImage(url: URL(string: movie.poster))
+                .resizable()
+                Blur(style: .dark)
+
+            }
+                .ignoresSafeArea()
+
+        )
 
         
-        .ignoresSafeArea()
 
     }
 }
 
-struct MovieDetailView_Previews: PreviewProvider {
-    @Namespace  static var namespace
-
-    static var previews: some View {
-        
-        
-        MovieDetailView(namespace: namespace, movie: .constant(.init(title: "Movie1", year: "2020", imdbId: "ee", poster: "movie1")), showMovieView: .constant(true))
-    }
-}
+//struct MovieDetailViewBlur_Previews: PreviewProvider {
+//    @Namespace  static var namespace
+//
+//    static var previews: some View {
+//        
+//        
+//        MovieDetailViewBlur(namespace: namespace, movie: .constant(MovieViewModel()), showMovieView: .constant(true))
+//    }
+//}

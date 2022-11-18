@@ -6,31 +6,35 @@
 //
 
 import SwiftUI
-
+import SDWebImage
+import SDWebImageSwiftUI
 struct MoviesListView: View {
    
+    @ObservedObject private var moviesVM : MoviesListViewModel
+    
     @Namespace var namespace
     @State var showMovieView : Bool = false
-    @State var movies : [Movie] = [.init(title: "Movie 1 title", year: "2020", imdbId: "Movie", poster: "movie1") , .init(title: "Movie 2 title", year: "2020", imdbId: "Movie", poster: "movie1") , .init(title: "Movie 3 title", year: "2021", imdbId: "Movie", poster: "movie1")]
     @State var searchtext : String = ""
+    @State var currentMovie : MovieViewModel = .init(movie: Movie.init(title: "", year: "", imdbId: "", poster: ""))
     
-    @State var currentMovie : Movie  = .init(title: "", year: "", imdbId: "", poster: "")
+    init () {
+        self.moviesVM  =  MoviesListViewModel()
+    }
     var body: some View {
+        
         if (!showMovieView){
         VStack {
             
-            Text("Movies")
-                .font(.largeTitle.bold())
-                .foregroundColor(.white)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth : .infinity , alignment: .leading)
-                .padding()
-                .padding(.top)
-                .padding(.leading)
+            TitleView()
+            
+            
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.white)
-                TextField(" Search", text: $searchtext)
+                TextField(" Search", text: $searchtext ,onEditingChanged: { _ in} , onCommit: {
+                    self.moviesVM.getMovieBySearch(search: searchtext)
+                }
+                )
                     .font(.system(size: 20).bold())
                     .foregroundColor(.white)
                 
@@ -49,14 +53,16 @@ struct MoviesListView: View {
                     
             
             )
-//            .background(
-//                Color.darkBackground
-//            )
+            
+            
+
         .padding(.horizontal , 30)
 
-            ScrollView {
-                ForEach($movies , id : \.self ) { $movie in
-                    MovieCardView(namespace: namespace, movie: $movie)
+            if (moviesVM.loadingState == .success) {
+                ScrollView {
+
+                ForEach(moviesVM.movies , id : \.self ) { movie in
+                    MovieCardView(namespace: namespace, movie: movie)
                         .onTapGesture {
                             currentMovie = movie
                             withAnimation (.spring(response: 0.7, dampingFraction: 1)){
@@ -64,20 +70,26 @@ struct MoviesListView: View {
                             }
                         }
                 }
-            }
+                }
             
-        }
+            }else if (moviesVM.loadingState == .falied){
+                FaliedView()
+            }else if moviesVM.loadingState == .loading {
+                CustomProgressView()
+
+                
+            }
+            Spacer()
+            
+            }
+        
         .background(
             
             
-            ZStack {
-                Color.darkBackground
-                LinearGradient(colors: [.blue.opacity(0.2)  ,.pink.opacity(0.1), .purple.opacity(0.4)], startPoint: .topTrailing, endPoint: .bottomLeading)
-                Blur(style: .dark)
-
-            }
-                .ignoresSafeArea()
+            DarkBackground()
         )
+            
+
         }else {
             MovieDetailViewBlur(namespace: namespace, movie: $currentMovie, showMovieView: $showMovieView)
         }
@@ -93,7 +105,7 @@ struct MoviesListView_Previews: PreviewProvider {
 
 struct MovieCardView: View {
     var namespace : Namespace.ID
-    @Binding var movie : Movie
+    var movie : MovieViewModel
     var body: some View {
         
         RoundedRectangle (cornerRadius: 20)
@@ -111,11 +123,11 @@ struct MovieCardView: View {
         
         
                     HStack {
-                        Image(movie.poster)
+                        WebImage(url: URL (string: movie.poster))
                             .resizable()
-                            .scaledToFit()
-                            .frame( height: 150)
-                            .cornerRadius(20)
+                            .scaledToFill()
+                            .frame( width : 100 , height: 140)
+                            .cornerRadius(15)
                             .shadow(color: Color.black.opacity(0.2), radius: 12, x: 5, y: 10)
 
                             .matchedGeometryEffect(id: movie.getId(type: .poster), in: namespace)
@@ -162,5 +174,45 @@ struct MovieCardView: View {
         .padding()
         .padding(.horizontal)
    
+    }
+}
+
+struct TitleView: View {
+    var body: some View {
+        Text("Movies")
+            .font(.largeTitle.bold())
+            .foregroundColor(.white)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth : .infinity , alignment: .leading)
+            .padding()
+            .padding(.top)
+            .padding(.leading)
+    }
+}
+
+struct DarkBackground: View {
+    var body: some View {
+        ZStack {
+            Color.darkBackground
+            LinearGradient(colors: [.blue.opacity(0.2)  ,.pink.opacity(0.1), .purple.opacity(0.4)], startPoint: .topTrailing, endPoint: .bottomLeading)
+            Blur(style: .dark)
+            
+        }
+        .ignoresSafeArea()
+    }
+}
+
+struct CustomProgressView: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: Color.white))
+                .padding(30)
+                .background(Color.darkBackground)
+                .cornerRadius(12)
+            Spacer()
+            
+        }
     }
 }
