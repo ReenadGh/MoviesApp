@@ -10,15 +10,15 @@ import SDWebImage
 import SDWebImageSwiftUI
 struct MoviesListView: View {
    
-    @ObservedObject private var moviesVM : MoviesListViewModel
+    @ObservedObject private var moviesVM : MoviesImdIdsViewModel
     
     @Namespace var namespace
     @State var showMovieView : Bool = false
     @State var searchtext : String = ""
-    @State var currentMovie : MovieViewModel = .init(movie: Movie.init(title: "", year: "", imdbId: "", poster: ""))
+
     
     init () {
-        self.moviesVM  =  MoviesListViewModel()
+        self.moviesVM  =  MoviesImdIdsViewModel()
     }
     var body: some View {
         
@@ -61,10 +61,10 @@ struct MoviesListView: View {
             if (moviesVM.loadingState == .success) {
                 ScrollView {
 
-                ForEach(moviesVM.movies , id : \.self ) { movie in
-                    MovieCardView(namespace: namespace, movie: movie)
+                    ForEach(moviesVM.moviesImdIds , id : \.self ) { movieImds in
+                        MovieCardView(namespace: namespace , movieImdID: movieImds)
                         .onTapGesture {
-                            currentMovie = movie
+                         //   currentMovie = movie
                             withAnimation (.spring(response: 0.7, dampingFraction: 1)){
                             showMovieView.toggle()
                             }
@@ -91,7 +91,7 @@ struct MoviesListView: View {
             
 
         }else {
-            MovieDetailViewBlur(namespace: namespace, movie: $currentMovie, showMovieView: $showMovieView)
+//            MovieDetailViewBlur(namespace: namespace, movie: $currentMovie, showMovieView: $showMovieView)
         }
             
     }
@@ -104,8 +104,10 @@ struct MoviesListView_Previews: PreviewProvider {
 }
 
 struct MovieCardView: View {
+    
     var namespace : Namespace.ID
-    var movie : MovieViewModel
+    var movieImdID : String
+    @ObservedObject private var movie =  MovieViewModel()
     var body: some View {
         
         RoundedRectangle (cornerRadius: 20)
@@ -173,7 +175,11 @@ struct MovieCardView: View {
 
         .padding()
         .padding(.horizontal)
-   
+        .onAppear{
+            
+            movie.getMovieByimdId(imdId: movieImdID)
+            print("\(movieImdID)")
+        }
     }
 }
 

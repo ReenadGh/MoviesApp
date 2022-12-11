@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
 
 
-class MoviesListViewModel : ViewModelBase {
-   @Published var movies = [MovieViewModel]()
+class MoviesImdIdsViewModel : ViewModelBase {
+   @Published var moviesImdIds = [String]()
+
     var httpClient = HTTPClient()
-    
+
     func getMovieBySearch(search : String){
         
         self.loadingState = .loading
@@ -30,46 +32,66 @@ class MoviesListViewModel : ViewModelBase {
             case .success(let movies) :
                 if let movies = movies {
                     DispatchQueue.main.async {
-                        self.movies = movies.map(MovieViewModel.init)
+                        self.moviesImdIds = movies.map({$0.imdbId})
                         self.loadingState = .success
+
                     }
                 }
             }
         }
     }
+    
+    
+    
+    
+ 
+
 }
 
-struct MovieViewModel : Hashable {
-    let movie : Movie
+
+
+
+class MovieViewModel :  ObservableObject {
+    
+    private var movie : Movie?
+    @Published var loadingState : LoadingState = LoadingState.loading
+    
+    var httpClient = HTTPClient()
     
     var imdbId  : String {
         
-        movie.imdbId
+        movie?.imdbId ?? ""
         
     }
     
     var title  : String {
         
-        movie.title
+        movie?.title ?? ""
         
     }
     var poster  : String {
         
-        movie.poster
+        movie?.poster ?? ""
         
     }
     
     var year  : String {
         
-        movie.year
+        movie?.year ?? ""
         
     }
     
+    var type  : String {
+        
+        movie?.type ?? ""
+        
+    }
     
+ 
     
     func getId (type : MatchedType) -> String {
         
-        return "\(type)-\(title)-\(year)"
+        return "\(type)-\(imdbId)"
     }
     
 }

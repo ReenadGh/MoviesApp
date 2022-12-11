@@ -16,11 +16,6 @@ enum NetworkError  : Error{
     case decodingError
 }
 class HTTPClient {
-
-    func getMovieBy(imdId : String ,completion : @escaping (Result<MovieDetail , NetworkError>) -> Void){
-        
-        
-    }
     func getMoviesBy(search : String , completion : @escaping ( Result<[Movie]? , NetworkError>)  -> Void ){
         
         guard let url = URL.forMoviesByName(search) else {

@@ -126,6 +126,6 @@ struct MovieDetailViewBlur: View {
 //    static var previews: some View {
 //        
 //        
-//        MovieDetailViewBlur(namespace: namespace, movie: .constant(MovieViewModel()), showMovieView: .constant(true))
+//        MovieDetailViewBlur(namespace: namespace, movie: .constant(MovieViewModel(movie: .init(title: "movie", year: "2020", imdbId: "", poster: "https://m.media-amazon.com/images/M/MV5BOTY4YjI2N2MtYmFlMC00ZjcyLTg3YjEtMDQyM2ZjYzQ5YWFkXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg"))), showMovieView: .constant(true))
 //    }
 //}

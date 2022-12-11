@@ -24,12 +24,16 @@ struct Movie: Codable  , Hashable{
     let year: String
     let imdbId: String
     let poster: String
+    let type : String
+    
     
     private enum CodingKeys: String, CodingKey {
         case title = "Title"
         case year = "Year"
         case imdbId = "imdbID"
         case poster = "Poster"
+        case type = "Type"
+
     }
     
     

@@ -1,10 +1,4 @@
-//
-//  RatingView.swift
-//  SwiftUIRatings
-//
-//  Created by Mohammad Azam on 6/20/20.
-//  Copyright © 2020 Mohammad Azam. All rights reserved.
-//
+
 
 import SwiftUI
 
